@@ -12,7 +12,7 @@ def set_bot_commands():
     commands = [
         types.BotCommand('start', "Запустить бота"),
         types.BotCommand('help', "Помощь и правила"),
-        types.BotCommand('stats', "Моя статистика"),
+        types.BotCommand('stats', "Мой профиль"),
         types.BotCommand('reset', "Сбросить статистику"),
     ]
     bot.set_my_commands(commands)
@@ -103,6 +103,7 @@ def help(message):
 def stats(message):
     user_id = message.from_user.id
     username = message.from_user.username or message.from_user.first_name
+    user_is_premium = getattr(message, 'is_premium', False)
 
     stats = get_users_stats(user_id, username)
 
@@ -114,6 +115,12 @@ def stats(message):
         wins_perc = 0
 
     stats_info = f"""
+👤 Ваш профиль:
+Имя: {message.from_user.first_name}
+ID: {user_id}
+Username: {username}
+Premium: {"✅ Да" if user_is_premium else "❌ Нет"}
+
 📊 Ваша статистика:
 Побед: {stats['wins']} 🎉
 Поражений: {stats['losses']} 😢
@@ -179,4 +186,5 @@ def handle_message(message):
 
 if __name__ == '__main__':
     print("Бот запущен")
+    bot.remove_webhook()
     bot.polling(non_stop=True)
